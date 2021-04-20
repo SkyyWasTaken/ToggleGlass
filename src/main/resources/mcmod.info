@@ -1,0 +1,16 @@
+[
+{
+  "modid": "hideglass",
+  "name": "Hide Glass",
+  "description": "A mod that adds a keybind for hiding glass",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["ExampleDude"],
+  "credits": "The Forge and FML guys, for making this example",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
