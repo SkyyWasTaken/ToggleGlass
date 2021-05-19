@@ -88,7 +88,7 @@ processResources
         }
 jar {
     manifest {
-        attributes (
+        attributes(
                 'FMLCorePlugin': "us.skyywastaken.hideglass.asm.HideGlassCorePlugin",
                 'FMLCorePluginContainsFMLMod': true
         )

@@ -17,158 +17,190 @@ import org.objectweb.asm.tree.VarInsnNode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 public class GlassMethodHelper {
+    public GlassMethodHelper() {
+    }
 
     public static MethodNode getGlassMethod(boolean isObfuscated) {
         HashMap<String, String> mappings;
-        if(isObfuscated) {
+        if (isObfuscated) {
             mappings = getObfuscatedGlassMappings(false);
         } else {
             mappings = getDeObfuscatedGlassMappings(false);
         }
+
         return getNewPatchMethod(mappings);
     }
 
     public static MethodNode getStainedGlassMethod(boolean isObfuscated) {
         HashMap<String, String> mappings;
-        if(isObfuscated) {
+        if (isObfuscated) {
             mappings = getObfuscatedGlassMappings(true);
         } else {
             mappings = getDeObfuscatedGlassMappings(true);
         }
+
         return getNewPatchMethod(mappings);
     }
 
+    public static MethodNode getGlassPaneMethod(boolean isObfuscated) {
+        HashMap<String, String> mappings;
+        if (isObfuscated) {
+            mappings = getObfuscatedGlassPaneMappings(false);
+        } else {
+            mappings = getDeObfuscatedGlassPaneMappings(false);
+        }
+
+        return getNewPatchMethod(mappings);
+    }
+
+    public static MethodNode getStainedGlassPaneMethod(boolean isObfuscated) {
+        HashMap<String, String> mappings;
+        if (isObfuscated) {
+            mappings = getObfuscatedGlassPaneMappings(true);
+        } else {
+            mappings = getDeObfuscatedGlassPaneMappings(true);
+        }
+
+        return getNewPatchMethod(mappings);
+    }
 
     public static MethodNode getNewPatchMethod(HashMap<String, String> mappings) {
-        /* Method contents:
-           if(glassIsHidden) {
-            return false;
-           } else {
-            return super.patchedMethod();
-           }
+        /* @SideOnly(Side.
+
          */
 
-        MethodNode methodNode = new MethodNode();
-        methodNode.name = mappings.get("sideRenderMethodName");
-        methodNode.desc = mappings.get("sideRenderMethodDesc");
-        methodNode.maxStack = 4;
-        methodNode.maxLocals = 4;
-        methodNode.exceptions = new ArrayList<>();
-        methodNode.access = 1;
+        MethodNode returnNode = new MethodNode();
+        returnNode.name = mappings.get("renderTypeMethodName");
+        returnNode.desc = "()I";
+        returnNode.maxStack = 4;
+        returnNode.maxLocals = 4;
+        returnNode.exceptions = new ArrayList<>();
+        returnNode.access = 1;
 
         AnnotationNode clientOnlyAnnotation = new AnnotationNode("net/minecraftforge/fml/relauncher/SideOnly");
         clientOnlyAnnotation.values = new ArrayList<>();
         clientOnlyAnnotation.values.add("value");
         clientOnlyAnnotation.values.add(new String[]{"net/minecraftforge/fml/relauncher/Side", "CLIENT"});
-        methodNode.visibleAnnotations = new ArrayList<>(Collections.singleton(clientOnlyAnnotation));
+        returnNode.visibleAnnotations = new ArrayList<>(Collections.singleton(clientOnlyAnnotation));
+
         LabelNode labelZero = new LabelNode();
-        LabelNode labelOne = new LabelNode();
         LabelNode labelTwo = new LabelNode();
+        LabelNode labelOne = new LabelNode();
         LabelNode labelThree = new LabelNode();
 
-        // LABEL 0
-        LineNumberNode lineNumberZero = new LineNumberNode(3621, labelOne);
+        //label 0
+        LineNumberNode lineNumberNodeZero = new LineNumberNode(420, labelZero);
         FieldInsnNode glassIsHiddenVariable = new FieldInsnNode(Opcodes.GETSTATIC,
                 "us/skyywastaken/hideglass/misc/GlassBehaviorManager", "glassIsHidden", "Z");
-        JumpInsnNode ifGlassIsHidden = new JumpInsnNode(Opcodes.IFEQ, labelOne);
+        JumpInsnNode ifGlassIsNotHidden = new JumpInsnNode(Opcodes.IFEQ, labelOne);
+        VarInsnNode paneMaterialVar = new VarInsnNode(Opcodes.ALOAD, 0);
+        MethodInsnNode getMaterialMethod = new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                mappings.get("asmBlockClassLocation"), mappings.get("getMaterialMethodName"),
+                "()L" + mappings.get("asmMaterialLocation") + ";", false);
+        FieldInsnNode paneMaterialField = new FieldInsnNode(Opcodes.GETSTATIC, mappings.get("asmMaterialLocation"),
+                mappings.get("glassMaterialName"), "L" + mappings.get("asmMaterialLocation") + ";");
+        JumpInsnNode ifMaterialIsNotGlass = new JumpInsnNode(Opcodes.IF_ACMPNE, labelOne);
 
-        // LABEL 2
-        LineNumberNode lineNumberTwo = new LineNumberNode(3622, labelTwo);
-        InsnNode falseValue = new InsnNode(Opcodes.ICONST_0);
-        InsnNode returnInsn = new InsnNode(Opcodes.IRETURN);
+        //label 2
+        LineNumberNode lineNumberNodeTwo = new LineNumberNode(421, labelTwo);
+        InsnNode pushNegativeOne = new InsnNode(Opcodes.ICONST_M1);
+        InsnNode returnNegativeOne = new InsnNode(Opcodes.IRETURN);
 
-        // LABEL 1
-        LineNumberNode lineNumberOne = new LineNumberNode(3623, labelOne);
-        FrameNode frameNode = new FrameNode(Opcodes.F_SAME, 4, null, 4, null);
-        VarInsnNode varInsnNodeZero = new VarInsnNode(Opcodes.ALOAD, 0);
-        VarInsnNode varInsnNodeOne = new VarInsnNode(Opcodes.ALOAD, 1);
-        VarInsnNode varInsnNodeTwo = new VarInsnNode(Opcodes.ALOAD, 2);
-        VarInsnNode varInsnNodeThree = new VarInsnNode(Opcodes.ALOAD, 3);
-        MethodInsnNode invokeDefaultMethod = new MethodInsnNode(Opcodes.INVOKESPECIAL,
-                mappings.get("asmParentClassLocation"), mappings.get("sideRenderMethodName"),
-                mappings.get("sideRenderMethodDesc"), false);
+        //label 1
+        LineNumberNode lineNumberOne = new LineNumberNode(422, labelOne);
+        FrameNode frameNode = new FrameNode(3, 4, null, 4, null);
+        VarInsnNode varInsnNode = new VarInsnNode(Opcodes.ALOAD, 0);
+        MethodInsnNode invokeDefaultMethod = new MethodInsnNode(Opcodes.INVOKESPECIAL, mappings.get("asmBlockClassLocation"), mappings.get("renderTypeMethodName"), "()I", false);
         InsnNode returnInsnTwo = new InsnNode(Opcodes.IRETURN);
 
-        // LABEL 3
-        LocalVariableNode thisLocalVariableNode = new LocalVariableNode("this", "L"
-                + mappings.get("asmGlassClassLocation") + ";", null, labelZero, labelThree, 0);
-        LocalVariableNode worldInLocalVariableNode = new LocalVariableNode("worldIn", "L"
-                + mappings.get("asmBlockAccessLocation") + ";", null, labelZero, labelThree, 1);
-        LocalVariableNode posLocalVariableNode = new LocalVariableNode("pos", "L"
-                + mappings.get("asmBlockPosLocation") + ";", null, labelZero, labelThree, 2);
-        LocalVariableNode sideLocalVariableNode = new LocalVariableNode("side", "L"
-                + mappings.get("asmEnumFacingLocation") + ";", null, labelZero, labelThree, 3);
-        List<LocalVariableNode> localVariableNodes = new ArrayList<>();
-        localVariableNodes.add(thisLocalVariableNode);
-        localVariableNodes.add(worldInLocalVariableNode);
-        localVariableNodes.add(posLocalVariableNode);
-        localVariableNodes.add(sideLocalVariableNode);
-        methodNode.localVariables = localVariableNodes;
+        //label 3
+        LocalVariableNode thisLocalVariableNode = new LocalVariableNode("this", "L" + mappings.get("asmCurrentClassLocation") + ";", null, labelZero, labelThree, 0);
+        returnNode.localVariables = new ArrayList<>(Collections.singleton(thisLocalVariableNode));
 
-        InsnList hideGlassInstructions = methodNode.instructions;
-        hideGlassInstructions.add(labelZero);
-        hideGlassInstructions.add(lineNumberZero);
-        hideGlassInstructions.add(glassIsHiddenVariable);
-        hideGlassInstructions.add(ifGlassIsHidden);
 
-        hideGlassInstructions.add(labelTwo);
-        hideGlassInstructions.add(lineNumberTwo);
-        hideGlassInstructions.add(falseValue);
-        hideGlassInstructions.add(returnInsn);
+        InsnList instructions = returnNode.instructions;
+        instructions.add(labelZero);
+        instructions.add(lineNumberNodeZero);
+        instructions.add(glassIsHiddenVariable);
+        instructions.add(ifGlassIsNotHidden);
+        if (mappings.containsKey("getMaterialMethodName")) {
+            instructions.add(paneMaterialVar);
+            instructions.add(getMaterialMethod);
+            instructions.add(paneMaterialField);
+            instructions.add(ifMaterialIsNotGlass);
+        }
 
-        hideGlassInstructions.add(labelOne);
-        hideGlassInstructions.add(lineNumberOne);
-        hideGlassInstructions.add(frameNode);
-        hideGlassInstructions.add(varInsnNodeZero);
-        hideGlassInstructions.add(varInsnNodeOne);
-        hideGlassInstructions.add(varInsnNodeTwo);
-        hideGlassInstructions.add(varInsnNodeThree);
-        hideGlassInstructions.add(invokeDefaultMethod);
-        hideGlassInstructions.add(returnInsnTwo);
-
-        hideGlassInstructions.add(labelThree);
-
-        return methodNode;
+        instructions.add(labelTwo);
+        instructions.add(lineNumberNodeTwo);
+        instructions.add(pushNegativeOne);
+        instructions.add(returnNegativeOne);
+        instructions.add(labelOne);
+        instructions.add(lineNumberOne);
+        instructions.add(frameNode);
+        instructions.add(varInsnNode);
+        instructions.add(invokeDefaultMethod);
+        instructions.add(returnInsnTwo);
+        instructions.add(labelThree);
+        return returnNode;
     }
 
     private static HashMap<String, String> getDeObfuscatedGlassMappings(boolean isStained) {
         HashMap<String, String> returnMappings = new HashMap<>();
-        if(!isStained) {
-            returnMappings.put("glassClassName", "net.minecraft.block.BlockGlass");
-            returnMappings.put("asmGlassClassLocation", "net/minecraft/block/BlockGlass");
+        if (!isStained) {
+            returnMappings.put("asmCurrentClassLocation", "net/minecraft/block/BlockGlass");
         } else {
-            returnMappings.put("glassClassName", "net.minecraft.block.BlockStainedGlass");
-            returnMappings.put("asmGlassClassLocation", "net/minecraft/block/BlockStainedGlass");
+            returnMappings.put("asmCurrentClassLocation", "net/minecraft/block/BlockStainedGlass");
         }
-        returnMappings.put("parentClassName", "net.minecraft.block.BlockBreakable");
-        returnMappings.put("asmParentClassLocation", "net/minecraft/block/BlockBreakable");
-        returnMappings.put("sideRenderMethodName", "shouldSideBeRendered");
-        returnMappings.put("sideRenderMethodDesc", "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/BlockPos;Lnet/minecraft/util/EnumFacing;)Z");
-        returnMappings.put("asmBlockAccessLocation", "net/minecraft/world/IBlockAccess");
-        returnMappings.put("asmBlockPosLocation", "net/minecraft/util/BlockPos");
-        returnMappings.put("asmEnumFacingLocation", "net/minecraft/util/EnumFacing");
+
+        returnMappings.put("asmBlockClassLocation", "net/minecraft/block/Block");
+        returnMappings.put("renderTypeMethodName", "getRenderType");
         return returnMappings;
     }
 
     private static HashMap<String, String> getObfuscatedGlassMappings(boolean isStained) {
         HashMap<String, String> returnMappings = new HashMap<>();
-        if(!isStained) {
-            returnMappings.put("glassClassName", "ahc");
-            returnMappings.put("asmGlassClassLocation", "ahc");
+        if (!isStained) {
+            returnMappings.put("asmCurrentClassLocation", "ahc");
         } else {
-            returnMappings.put("glassClassName", "ajs");
-            returnMappings.put("asmGlassClassLocation", "ajs");
+            returnMappings.put("asmCurrentClassLocation", "ajs");
         }
-        returnMappings.put("parentClassName", "ahj");
-        returnMappings.put("asmParentClassLocation", "ahj");
-        returnMappings.put("sideRenderMethodName", "func_176225_a");
-        returnMappings.put("sideRenderMethodDesc", "(Ladq;Lcj;Lcq;)Z");
-        returnMappings.put("asmBlockAccessLocation", "adq");
-        returnMappings.put("asmBlockPosLocation", "cj");
-        returnMappings.put("asmEnumFacingLocation", "cq");
+
+        returnMappings.put("asmBlockClassLocation", "afh");
+        returnMappings.put("renderTypeMethodName", "func_149645_b");
+        return returnMappings;
+    }
+
+    private static HashMap<String, String> getDeObfuscatedGlassPaneMappings(boolean isStained) {
+        HashMap<String, String> returnMappings = new HashMap<>();
+        if (!isStained) {
+            returnMappings.put("asmCurrentClassLocation", "net/minecraft/block/BlockPane");
+        } else {
+            returnMappings.put("asmCurrentClassLocation", "net/minecraft/block/BlockStainedGlassPane");
+        }
+
+        returnMappings.put("asmBlockClassLocation", "net/minecraft/block/Block");
+        returnMappings.put("renderTypeMethodName", "getRenderType");
+        returnMappings.put("asmMaterialLocation", "net/minecraft/block/material/Material");
+        returnMappings.put("glassMaterialName", "glass");
+        returnMappings.put("getMaterialMethodName", "getMaterial");
+        return returnMappings;
+    }
+
+    private static HashMap<String, String> getObfuscatedGlassPaneMappings(boolean isStained) {
+        HashMap<String, String> returnMappings = new HashMap<>();
+        if (!isStained) {
+            returnMappings.put("asmCurrentClassLocation", "akd");
+        } else {
+            returnMappings.put("asmCurrentClassLocation", "ajt");
+        }
+
+        returnMappings.put("asmBlockClassLocation", "afh");
+        returnMappings.put("renderTypeMethodName", "func_149645_b");
+        returnMappings.put("asmMaterialLocation", "arm");
+        returnMappings.put("glassMaterialName", "s");
+        returnMappings.put("getMaterialMethodName", "func_149688_o");
         return returnMappings;
     }
 }
