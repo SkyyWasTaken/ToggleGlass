@@ -36,7 +36,7 @@ public class GlassKeybindingManager {
     private void playSuccessNoise(EntityPlayerSP clientPlayer) {
         BlockPos playerPos = clientPlayer.getPosition();
         Minecraft.getMinecraft().theWorld.playSoundAtPos(playerPos, "note.bass", Float.MAX_VALUE,
-                2.0F, false);
+                2, false);
     }
 
     private void sendToggleSuccessMessage(EntityPlayerSP clientPlayer) {
