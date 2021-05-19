@@ -9,7 +9,7 @@ import us.skyywastaken.toggleglass.misc.GlassKeybindingManager;
 @Mod(modid = ToggleGlass.MODID, name = ToggleGlass.NAME, version = ToggleGlass.VERSION)
 public class ToggleGlass {
     public static final String MODID = "toggleglass";
-    public static final String VERSION = "0.0.1";
+    public static final String VERSION = "1.3.0";
     public static final String NAME = "Toggle Glass";
 
     @EventHandler

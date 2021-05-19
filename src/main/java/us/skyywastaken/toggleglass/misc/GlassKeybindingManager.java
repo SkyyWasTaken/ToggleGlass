@@ -12,13 +12,12 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
-import us.skyywastaken.toggleglass.ToggleGlass;
 
 public class GlassKeybindingManager {
     public static KeyBinding hideGlass;
 
     public static void initKeybind() {
-        hideGlass = new KeyBinding("key.toggleglass", Keyboard.KEY_G, ToggleGlass.MODID);
+        hideGlass = new KeyBinding("key.toggleglass", Keyboard.KEY_G, "ToggleGlass");
         ClientRegistry.registerKeyBinding(hideGlass);
     }
 
