@@ -1,4 +1,4 @@
-package us.skyywastaken.hideglass.asm;
+package us.skyywastaken.toggleglass.asm;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.tree.ClassNode;

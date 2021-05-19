@@ -1,4 +1,4 @@
-package us.skyywastaken.hideglass.misc;
+package us.skyywastaken.toggleglass.misc;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -12,13 +12,13 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
-import us.skyywastaken.hideglass.HideGlass;
+import us.skyywastaken.toggleglass.ToggleGlass;
 
 public class GlassKeybindingManager {
     public static KeyBinding hideGlass;
 
     public static void initKeybind() {
-        hideGlass = new KeyBinding("key.hideglass", Keyboard.KEY_G, HideGlass.MODID);
+        hideGlass = new KeyBinding("key.toggleglass", Keyboard.KEY_G, ToggleGlass.MODID);
         ClientRegistry.registerKeyBinding(hideGlass);
     }
 

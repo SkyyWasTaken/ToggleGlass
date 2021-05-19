@@ -1,16 +1,16 @@
-package us.skyywastaken.hideglass.asm;
+package us.skyywastaken.toggleglass.asm;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 import java.util.Map;
 
 
-@IFMLLoadingPlugin.TransformerExclusions({"us.skyywastaken.hideglass.asm", "us.skyywastaken.hideglass.patch.GlassPatch"})
+@IFMLLoadingPlugin.TransformerExclusions({"us.skyywastaken.toggleglass.asm"})
 @IFMLLoadingPlugin.MCVersion("1.8.9")
-public class HideGlassCorePlugin implements IFMLLoadingPlugin {
+public class ToggleGlassCorePlugin implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass() {
-        return new String[]{"us.skyywastaken.hideglass.asm.BlockGlassTransformer"};
+        return new String[]{"us.skyywastaken.toggleglass.asm.BlockGlassTransformer"};
     }
 
     @Override

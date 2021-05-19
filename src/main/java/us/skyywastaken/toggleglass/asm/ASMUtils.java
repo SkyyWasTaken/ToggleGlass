@@ -1,4 +1,4 @@
-package us.skyywastaken.hideglass.asm;
+package us.skyywastaken.toggleglass.asm;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;

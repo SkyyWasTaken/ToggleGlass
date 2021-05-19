@@ -1,4 +1,4 @@
-package us.skyywastaken.hideglass.asm;
+package us.skyywastaken.toggleglass.asm;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -93,7 +93,7 @@ public class GlassMethodHelper {
         //label 0
         LineNumberNode lineNumberNodeZero = new LineNumberNode(420, labelZero);
         FieldInsnNode glassIsHiddenVariable = new FieldInsnNode(Opcodes.GETSTATIC,
-                "us/skyywastaken/hideglass/misc/GlassBehaviorManager", "glassIsHidden", "Z");
+                "us/skyywastaken/toggleglass/misc/GlassBehaviorManager", "glassIsHidden", "Z");
         JumpInsnNode ifGlassIsNotHidden = new JumpInsnNode(Opcodes.IFEQ, labelOne);
         VarInsnNode paneMaterialVar = new VarInsnNode(Opcodes.ALOAD, 0);
         MethodInsnNode getMaterialMethod = new MethodInsnNode(Opcodes.INVOKESPECIAL,
