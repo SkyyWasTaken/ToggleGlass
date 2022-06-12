@@ -67,9 +67,6 @@ public class GlassMethodHelper {
     }
 
     public static MethodNode getNewPatchMethod(HashMap<String, String> mappings) {
-        /* @SideOnly(Side.
-
-         */
 
         MethodNode returnNode = new MethodNode();
         returnNode.name = mappings.get("renderTypeMethodName");
@@ -85,64 +82,48 @@ public class GlassMethodHelper {
         clientOnlyAnnotation.values.add(new String[]{"net/minecraftforge/fml/relauncher/Side", "CLIENT"});
         returnNode.visibleAnnotations = new ArrayList<>(Collections.singleton(clientOnlyAnnotation));
 
+        InsnList instructions = returnNode.instructions;
         LabelNode labelZero = new LabelNode();
         LabelNode labelTwo = new LabelNode();
         LabelNode labelOne = new LabelNode();
         LabelNode labelThree = new LabelNode();
 
         //label 0
-        LineNumberNode lineNumberNodeZero = new LineNumberNode(420, labelZero);
-        FieldInsnNode glassIsHiddenVariable = new FieldInsnNode(Opcodes.GETSTATIC,
-                "us/skyywastaken/toggleglass/misc/GlassBehaviorManager", "glassIsHidden", "Z");
-        JumpInsnNode ifGlassIsNotHidden = new JumpInsnNode(Opcodes.IFEQ, labelOne);
-        VarInsnNode paneMaterialVar = new VarInsnNode(Opcodes.ALOAD, 0);
-        MethodInsnNode getMaterialMethod = new MethodInsnNode(Opcodes.INVOKESPECIAL,
-                mappings.get("asmBlockClassLocation"), mappings.get("getMaterialMethodName"),
-                "()L" + mappings.get("asmMaterialLocation") + ";", false);
-        FieldInsnNode paneMaterialField = new FieldInsnNode(Opcodes.GETSTATIC, mappings.get("asmMaterialLocation"),
-                mappings.get("glassMaterialName"), "L" + mappings.get("asmMaterialLocation") + ";");
-        JumpInsnNode ifMaterialIsNotGlass = new JumpInsnNode(Opcodes.IF_ACMPNE, labelOne);
+        instructions.add(labelZero);
+        instructions.add(new LineNumberNode(420, labelZero));
+        instructions.add(new FieldInsnNode(Opcodes.GETSTATIC,
+                "us/skyywastaken/toggleglass/misc/GlassBehaviorManager", "glassIsHidden", "Z"));
+        instructions.add(new JumpInsnNode(Opcodes.IFEQ, labelOne));
+
+        if(mappings.containsKey("getMaterialMethodName")) {
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                    mappings.get("asmBlockClassLocation"), mappings.get("getMaterialMethodName"),
+                    "()L" + mappings.get("asmMaterialLocation") + ";", false));
+            instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, mappings.get("asmMaterialLocation"),
+                    mappings.get("glassMaterialName"), "L" + mappings.get("asmMaterialLocation") + ";"));
+            instructions.add(new JumpInsnNode(Opcodes.IF_ACMPNE, labelOne));
+        }
 
         //label 2
-        LineNumberNode lineNumberNodeTwo = new LineNumberNode(421, labelTwo);
-        InsnNode pushNegativeOne = new InsnNode(Opcodes.ICONST_M1);
-        InsnNode returnNegativeOne = new InsnNode(Opcodes.IRETURN);
+        instructions.add(labelTwo);
+        instructions.add(new LineNumberNode(421, labelTwo));
+        instructions.add(new InsnNode(Opcodes.ICONST_M1));
+        instructions.add(new InsnNode(Opcodes.IRETURN));
 
         //label 1
-        LineNumberNode lineNumberOne = new LineNumberNode(422, labelOne);
-        FrameNode frameNode = new FrameNode(3, 4, null, 4, null);
-        VarInsnNode varInsnNode = new VarInsnNode(Opcodes.ALOAD, 0);
-        MethodInsnNode invokeDefaultMethod = new MethodInsnNode(Opcodes.INVOKESPECIAL, mappings.get("asmBlockClassLocation"), mappings.get("renderTypeMethodName"), "()I", false);
-        InsnNode returnInsnTwo = new InsnNode(Opcodes.IRETURN);
+        instructions.add(labelOne);
+        instructions.add(new LineNumberNode(422, labelOne));
+        instructions.add(new FrameNode(3, 4, null, 4, null));
+        instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
+        instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, mappings.get("asmBlockClassLocation"),
+                mappings.get("renderTypeMethodName"), "()I", false));
+        instructions.add(new InsnNode(Opcodes.IRETURN));
 
         //label 3
         LocalVariableNode thisLocalVariableNode = new LocalVariableNode("this", "L" + mappings.get("asmCurrentClassLocation") + ";", null, labelZero, labelThree, 0);
         returnNode.localVariables = new ArrayList<>(Collections.singleton(thisLocalVariableNode));
 
-
-        InsnList instructions = returnNode.instructions;
-        instructions.add(labelZero);
-        instructions.add(lineNumberNodeZero);
-        instructions.add(glassIsHiddenVariable);
-        instructions.add(ifGlassIsNotHidden);
-        if (mappings.containsKey("getMaterialMethodName")) {
-            instructions.add(paneMaterialVar);
-            instructions.add(getMaterialMethod);
-            instructions.add(paneMaterialField);
-            instructions.add(ifMaterialIsNotGlass);
-        }
-
-        instructions.add(labelTwo);
-        instructions.add(lineNumberNodeTwo);
-        instructions.add(pushNegativeOne);
-        instructions.add(returnNegativeOne);
-        instructions.add(labelOne);
-        instructions.add(lineNumberOne);
-        instructions.add(frameNode);
-        instructions.add(varInsnNode);
-        instructions.add(invokeDefaultMethod);
-        instructions.add(returnInsnTwo);
-        instructions.add(labelThree);
         return returnNode;
     }
 
